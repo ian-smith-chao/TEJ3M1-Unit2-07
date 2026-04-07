@@ -3,6 +3,7 @@
  *by Ian Smith-Chao
  *This program that detects distance, if its less then 50cm servo rotates from 0 to 180 degrees continuously.
  */
+
 #include <Servo.h>
 
 // pin setup and defintion 
