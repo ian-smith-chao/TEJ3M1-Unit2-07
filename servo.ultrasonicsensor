@@ -1,1 +1,62 @@
+/*
+ *created March 2026
+ *by Ian Smith-Chao
+ *This program that detects distance, if its less then 50cm servo rotates from 0 to 180 degrees continuously.
+ */
+#include <Servo.h>
 
+// pin setup and defintion 
+const int trigPin = 9;    // HC-SR04 Trig Pin
+const int echoPin = 10;   // HC-SR04 Echo Pin
+const int servoPin = 6;   // Servo Signal Pin
+const int threshold = 50; // Distance in cm
+
+// Variables
+long duration;
+int distance;
+Servo myServo;
+
+void setup() {
+  pinMode(trigPin, OUTPUT); 
+  pinMode(echoPin, INPUT);  
+  
+  myServo.attach(servoPin); 
+  myServo.write(0);         // Initialize at 0 degrees
+  
+  Serial.begin(9600);       // To monitor distance in Serial Monitor
+}
+
+void loop() {
+  // Get Distance
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+
+  duration = pulseIn(echoPin, HIGH);
+  distance = duration * 0.034 / 2;
+
+  // Action Logic
+  if (distance > 0 && distance < threshold) {
+    // Continuous rotation/sweeping while object is close
+    for (int pos = 0; pos <= 180; pos += 2) { 
+      myServo.write(pos);              
+      delay(5); 
+    }
+    for (int pos = 180; pos >= 0; pos -= 2) { 
+      myServo.write(pos);              
+      delay(5);
+    }
+  } else {
+    // Stay at idle position if nothing is detected
+    myServo.write(0); 
+  }
+
+  // Debugging Output
+  Serial.print("Current Distance: ");
+  Serial.print(distance);
+  Serial.println(" cm");
+  
+  delay(50); // Short stability delay
+}
